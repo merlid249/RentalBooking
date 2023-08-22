@@ -25,7 +25,7 @@ namespace RentalBooking.Tools
             var token = authorizationHeader.Substring("Bearer ".Length).Trim();
 
             // Validate the token (replace with your logic)
-            if (token != "YXNsamRiYWprbHNiZGhqdWFzYmhuZG91YXNpZGhqbmFzaW9kazphc2RrbGFzaG5kbGthc25ka2xhc25ka2xhc25ka2xhc2tsZA") // Replace with your validation logic
+            if (token != "xxxxxxxxxxxxxxxx") // Replace with your validation logic
             {
                 return AuthenticateResult.Fail("Invalid token");
             }
