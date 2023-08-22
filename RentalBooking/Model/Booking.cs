@@ -41,4 +41,11 @@ namespace RentalBooking.Model
         public decimal ServicePrice { get; set; }
     }
 
+    public class ChangeStatus
+    {
+        public string id { get; set; }
+        public string status { get; set; }
+
+    }
+
 }

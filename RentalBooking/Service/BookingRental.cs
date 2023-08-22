@@ -62,7 +62,6 @@ namespace RentalBooking.Service
             }
             return bookings;
         }
-
         internal static async Task<Booking> getBookingById(string id)
         {
 
@@ -114,6 +113,119 @@ namespace RentalBooking.Service
                 }
             }
             return booked;
+        }
+        internal static async Task<Boolean> updateBookingById(Booking updatedBooked)
+        {
+            Boolean resp = false;
+            using (SqlConnection conn = new SqlConnection(Connection.RentalBookingConnection))
+            {
+                await conn.OpenAsync();
+                string response = "UPDATE RentalBooking.dbo.Bookings " +
+                    " SET  " +
+                    " client_id = '" + updatedBooked.ClientId + "'," +
+                    " car_id = '" + updatedBooked.CarId + "'," +
+                    " start_date = '" + updatedBooked.StartDate + "'," +
+                    " end_date = '" + updatedBooked.EndDate + "'," +
+                    " status = '" + updatedBooked.Status + "'," +
+                    " location_pickup = '" + updatedBooked.LocationPickup + "'," +
+                    " location_dropoff = '" + updatedBooked.LocationPickup + "'," +
+                    " price = '" + updatedBooked.Price + "'," +
+                    " payment_method = '" + updatedBooked.PaymentMethod + "'," +
+                    " payment_status = '" + updatedBooked.PaymentMethod + "'," +
+                    " payment_transaction_id = '" + updatedBooked.PaymentTransactionId + "'," +
+                    " vehicle_condition = '" + updatedBooked.VehicleCondition + "'," +
+                    " booking_source = '" + updatedBooked.BookingSource + "'," +
+                    " mileage_limit = '" + updatedBooked.MileageLimit+ "'," +
+                    " insurance_type = '" + updatedBooked.InsuranceType + "'," +
+                    " updated_at = '" + updatedBooked.UpdatedAt + "'" +
+                    " WHERE booking_id = '" + updatedBooked.BookingId + "'";
+
+                using (SqlCommand cmd = new SqlCommand(response, conn))
+                {
+                    cmd.CommandType = CommandType.Text;
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        if(reader.RecordsAffected == 1 )
+                        {
+                            resp = true;
+
+                        }
+                    }
+                }
+            }
+            return resp;
+        }
+        internal static async Task<Boolean> bookCar(Booking booking)
+        {
+            Boolean resp = false;
+            using (SqlConnection conn = new SqlConnection(Connection.RentalBookingConnection))
+            {
+                await conn.OpenAsync();
+                string insertQuery = "INSERT INTO RentalBooking.dbo.Bookings " +
+                      "(booking_id,client_id, car_id, start_date, end_date, status, location_pickup, location_dropoff, price, payment_method, payment_status, payment_transaction_id, vehicle_condition, booking_source, mileage_limit, insurance_type, updated_at) " +
+                      "VALUES (" +
+                       "'" + booking.BookingId + "'," +
+                      "'" + booking.ClientId + "'," +
+                      "'" + booking.CarId + "'," +
+                      "'" + booking.StartDate + "'," +
+                      "'" + booking.EndDate + "'," +
+                      "'" + booking.Status + "'," +
+                      "'" + booking.LocationPickup + "'," +
+                      "'" + booking.LocationDropoff + "'," + // Note: I changed this from LocationPickup to LocationDropoff based on your previous update query.
+                      "'" + booking.Price + "'," +
+                      "'" + booking.PaymentMethod + "'," +
+                      "'" + booking.PaymentStatus + "'," + // Note: I assume this was a typo in your update query where you used PaymentMethod for PaymentStatus.
+                      "'" + booking.PaymentTransactionId + "'," +
+                      "'" + booking.VehicleCondition + "'," +
+                      "'" + booking.BookingSource + "'," +
+                      "'" + booking.MileageLimit + "'," +
+                      "'" + booking.InsuranceType + "'," +
+                      "'" + booking.UpdatedAt + "'" +
+                      ")";
+
+
+
+                using (SqlCommand cmd = new SqlCommand(insertQuery, conn))
+                {
+                    cmd.CommandType = CommandType.Text;
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        if (reader.RecordsAffected == 1)
+                        {
+                            resp = true;
+
+                        }
+                    }
+                }
+            }
+            return resp;
+        }
+        //Change status
+        internal static async Task<Boolean> cancelBooking(ChangeStatus changeStatus)
+        {
+            Boolean resp = false;
+            using (SqlConnection conn = new SqlConnection(Connection.RentalBookingConnection))
+            {
+                await conn.OpenAsync();
+                string response = "UPDATE RentalBooking.dbo.Bookings " +
+                    " SET  " +
+                    " status = '" + changeStatus.status + "'" +
+                    " WHERE booking_id = '" + changeStatus.id + "'";
+
+                using (SqlCommand cmd = new SqlCommand(response, conn))
+                {
+                    cmd.CommandType = CommandType.Text;
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        if (reader.RecordsAffected == 1)
+                        {
+                            resp = true;
+
+                        }
+                    }
+                }
+            }
+            return resp;
         }
     }
 }
