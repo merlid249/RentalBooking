@@ -227,6 +227,48 @@ namespace RentalBooking.Service
             }
             return resp;
         }
+
+
+        internal static async Task<List<List<DateTime>>> GetBookedDatesForCar(int carId)
+        {
+            List<List<DateTime>> bookings = new List<List<DateTime>>();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(Connection.RentalBookingConnection))
+                {
+                    await conn.OpenAsync();
+                    string selectQuery = "SELECT start_date, end_date FROM RentalBooking.dbo.Bookings WHERE " +
+                         " car_id = '" + carId + "'" +
+                        " ORDER BY start_date";
+
+                    using (SqlCommand cmd = new SqlCommand(selectQuery, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@CarId", carId);
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                DateTime startDate = DateTime.Parse(reader["start_date"].ToString());
+                                DateTime endDate = DateTime.Parse(reader["end_date"].ToString());
+
+                                List<DateTime> bookingDates = new List<DateTime>();
+                                for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
+                                {
+                                    bookingDates.Add(date);
+                                }
+                                bookings.Add(bookingDates);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return bookings;
+        }
+
     }
 }
 

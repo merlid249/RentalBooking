@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.ObjectPool;
 using RentalBooking.Model;
@@ -174,6 +175,28 @@ namespace RentalBooking.Controllers
             {
                 Console.WriteLine(ex.Message);
                 return BadRequest();
+            }
+        }
+
+        [HttpGet("getBookedDates/{carId}")]
+        public async Task<ActionResult<List<List<DateTime>>>> GetBookedDates(int carId)
+        {
+            try
+            {
+                var bookedDates = await BookingRental.GetBookedDatesForCar(carId);
+                if (bookedDates != null && bookedDates.Any())
+                {
+                    return Ok(bookedDates);
+                }
+                else
+                {
+                    return NotFound("No bookings found for Car ID " + carId);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest("Something went wrong");
             }
         }
 
